@@ -97,6 +97,7 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
         # Check mask is in [0, 1]
         if mask.min() < 0 or mask.max() > 1:
             raise ValueError("Mask should be in [0, 1] range")
+        
         if paint_area=="Mask Area": 
             # Binarize mask
             mask[mask < 0.5] = 0
@@ -124,10 +125,9 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
     if paint_area=="Mask Area": 
         mask[mask < 0.5] = 0
         mask[mask >= 0.5] = 1
-
         masked_image = image * (mask <0.5)
     else: 
-         mask[mask < 0.5] = 1
+        mask[mask < 0.5] = 1
         mask[mask >= 0.5] = 0
         masked_image = image * (mask <0.5)
 
