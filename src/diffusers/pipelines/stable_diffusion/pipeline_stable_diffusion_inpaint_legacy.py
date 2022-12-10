@@ -63,7 +63,6 @@ def preprocess_mask(mask, scale_factor=8):
     # mask = 1 - mask  # repaint white, keep black
     # mask = torch.from_numpy(mask)
 
-
     return mask
 
 
