@@ -134,14 +134,14 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
         # mask[mask < 0.5] = 0
         # mask[mask >= 0.5] = 1
         # masked_image = image * (mask <0.5)
-        masked_image = image * (mask)
+        masked_image = image * (mask < 0.5)
 
     
     elif paint_area=="Background Area":
         # mask[mask < 0.5] = 1
         # mask[mask >= 0.5] = 0
         # masked_image = image * (mask < 0.5)
-        masked_image = image * (1-mask)
+        masked_image = image * (mask >0.5)
     else: 
         raise ValueError("paint_area should be either 'Mask Area' or 'Background Area'")
     return mask, masked_image
