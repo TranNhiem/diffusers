@@ -102,10 +102,12 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
             # Binarize mask
             mask[mask < 0.5] = 0
             mask[mask >= 0.5] = 1
-        else: 
+        elif paint_area=="Background Area":
             # Binarize mask
             mask[mask < 0.5] = 1
             mask[mask >= 0.5] = 0
+        else: 
+            raise ValueError("paint_area should be either 'Mask Area' or 'Background Area'")
         # Image as float32
         image = image.to(dtype=torch.float32)
     elif isinstance(mask, torch.Tensor):
@@ -118,19 +120,21 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
         if isinstance(mask, PIL.Image.Image):
             mask = np.array(mask.convert("L"))
             mask = mask.astype(np.float32) / 255.0
+        
         mask = mask[None, None]
-       
         mask = torch.from_numpy(mask)
 
     if paint_area=="Mask Area": 
         mask[mask < 0.5] = 0
         mask[mask >= 0.5] = 1
         masked_image = image * (mask <0.5)
-    else: 
+    
+    elif paint_area=="Background Area":
         mask[mask < 0.5] = 1
         mask[mask >= 0.5] = 0
-        masked_image = image * (mask <0.5)
-
+        masked_image = image * (mask < 0.5)
+    else: 
+        raise ValueError("paint_area should be either 'Mask Area' or 'Background Area'")
     return mask, masked_image
 
 
