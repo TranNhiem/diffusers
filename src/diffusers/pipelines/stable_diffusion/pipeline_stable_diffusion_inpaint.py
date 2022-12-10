@@ -122,17 +122,26 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
             mask = mask.astype(np.float32) / 255.0
         
         mask = mask[None, None]
-        mask = torch.from_numpy(mask)
-
-    if paint_area=="Mask Area": 
+       
+        
         mask[mask < 0.5] = 0
         mask[mask >= 0.5] = 1
-        masked_image = image * (mask <0.5)
+        mask = torch.from_numpy(mask)
+        # mask = torch.from_numpy(mask)
+
+
+    if paint_area=="Mask Area": 
+        # mask[mask < 0.5] = 0
+        # mask[mask >= 0.5] = 1
+        # masked_image = image * (mask <0.5)
+        masked_image = image * (mask)
+
     
     elif paint_area=="Background Area":
-        mask[mask < 0.5] = 1
-        mask[mask >= 0.5] = 0
-        masked_image = image * (mask < 0.5)
+        # mask[mask < 0.5] = 1
+        # mask[mask >= 0.5] = 0
+        # masked_image = image * (mask < 0.5)
+        masked_image = image * (1-mask)
     else: 
         raise ValueError("paint_area should be either 'Mask Area' or 'Background Area'")
     return mask, masked_image
@@ -513,7 +522,7 @@ class StableDiffusionInpaintPipeline(DiffusionPipeline):
         prompt: Union[str, List[str]],
         image: Union[torch.FloatTensor, PIL.Image.Image],
         mask_image: Union[torch.FloatTensor, PIL.Image.Image],
-        paint_area: Optional[str]= "Mask Area", 
+        paint_area: [str]= "Mask Area", 
         height: Optional[int] = None,
         width: Optional[int] = None,
         num_inference_steps: int = 50,
