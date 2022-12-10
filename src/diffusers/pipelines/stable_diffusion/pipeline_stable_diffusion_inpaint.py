@@ -97,11 +97,14 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
         # Check mask is in [0, 1]
         if mask.min() < 0 or mask.max() > 1:
             raise ValueError("Mask should be in [0, 1] range")
-
-        # Binarize mask
-        mask[mask < 0.5] = 0
-        mask[mask >= 0.5] = 1
-
+        if paint_area=="Mask Area": 
+            # Binarize mask
+            mask[mask < 0.5] = 0
+            mask[mask >= 0.5] = 1
+        else: 
+            # Binarize mask
+            mask[mask < 0.5] = 1
+            mask[mask >= 0.5] = 0
         # Image as float32
         image = image.to(dtype=torch.float32)
     elif isinstance(mask, torch.Tensor):
@@ -115,16 +118,18 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
             mask = np.array(mask.convert("L"))
             mask = mask.astype(np.float32) / 255.0
         mask = mask[None, None]
-        mask[mask < 0.5] = 0
-        mask[mask >= 0.5] = 1
+       
         mask = torch.from_numpy(mask)
 
     if paint_area=="Mask Area": 
+        mask[mask < 0.5] = 0
+        mask[mask >= 0.5] = 1
 
-        masked_image = image * (mask )
+        masked_image = image * (mask <0.5)
     else: 
-        mask = 1 - mask
-        masked_image = image * (mask )
+         mask[mask < 0.5] = 1
+        mask[mask >= 0.5] = 0
+        masked_image = image * (mask <0.5)
 
     return mask, masked_image
 
