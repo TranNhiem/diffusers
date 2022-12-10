@@ -35,7 +35,7 @@ from .safety_checker import StableDiffusionSafetyChecker
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
 
-def prepare_mask_and_masked_image(image, mask, paint_area="foreground_area"):
+def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
     """
     Prepares a pair (image, mask) to be consumed by the Stable Diffusion pipeline. This means that those inputs will be
     converted to ``torch.Tensor`` with shapes ``batch x channels x height x width`` where ``channels`` is ``3`` for the
@@ -118,10 +118,13 @@ def prepare_mask_and_masked_image(image, mask, paint_area="foreground_area"):
         mask[mask < 0.5] = 0
         mask[mask >= 0.5] = 1
         mask = torch.from_numpy(mask)
-    if paint_area=="foreground_area": 
-        masked_image = image * (mask < 0.5)
+
+    if paint_area=="Mask Area": 
+
+        masked_image = image * (mask )
     else: 
-        masked_image = image * (mask > 0.5)
+        mask = 1 - mask
+        masked_image = image * (mask )
 
     return mask, masked_image
 
@@ -501,7 +504,7 @@ class StableDiffusionInpaintPipeline(DiffusionPipeline):
         prompt: Union[str, List[str]],
         image: Union[torch.FloatTensor, PIL.Image.Image],
         mask_image: Union[torch.FloatTensor, PIL.Image.Image],
-        paint_area: Optional[str]= "foreground_area", 
+        paint_area: Optional[str]= "Mask Area", 
         height: Optional[int] = None,
         width: Optional[int] = None,
         num_inference_steps: int = 50,
