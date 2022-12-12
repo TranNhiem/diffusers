@@ -122,11 +122,10 @@ def prepare_mask_and_masked_image(image, mask, paint_area="Mask Area"):
             mask = mask.astype(np.float32) / 255.0
         
         mask = mask[None, None]
-       
         
-        mask[mask < 0.5] = 0
-        mask[mask >= 0.5] = 1
-        mask = torch.from_numpy(mask)
+        # mask[mask < 0.5] = 0
+        # mask[mask >= 0.5] = 1
+        # mask = torch.from_numpy(mask)
         # mask = torch.from_numpy(mask)
 
 
