@@ -16,7 +16,7 @@ import PIL.ImageOps
 import requests
 from packaging import version
 
-from .import_utils import is_flax_available, is_onnx_available, is_torch_available
+from .import_utils import is_compel_available, is_flax_available, is_onnx_available, is_torch_available
 from .logging import get_logger
 
 
@@ -163,11 +163,24 @@ def require_torch_gpu(test_case):
     )
 
 
+def skip_mps(test_case):
+    """Decorator marking a test to skip if torch_device is 'mps'"""
+    return unittest.skipUnless(torch_device != "mps", "test requires non 'mps' device")(test_case)
+
+
 def require_flax(test_case):
     """
     Decorator marking a test that requires JAX & Flax. These tests are skipped when one / both are not installed
     """
     return unittest.skipUnless(is_flax_available(), "test requires JAX & Flax")(test_case)
+
+
+def require_compel(test_case):
+    """
+    Decorator marking a test that requires compel: https://github.com/damian0815/compel. These tests are skipped when
+    the library is not installed.
+    """
+    return unittest.skipUnless(is_compel_available(), "test requires compel")(test_case)
 
 
 def require_onnxruntime(test_case):
@@ -201,6 +214,13 @@ def load_numpy(arry: Union[str, np.ndarray], local_path: Optional[str] = None) -
             " ndarray."
         )
 
+    return arry
+
+
+def load_pt(url: str):
+    response = requests.get(url)
+    response.raise_for_status()
+    arry = torch.load(BytesIO(response.content))
     return arry
 
 
